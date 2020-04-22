@@ -3,6 +3,8 @@
 #include "my_app.h"
 
 #include <cinder/app/App.h>
+#include <httplib.h>
+#include <HTTPRequest.hpp>
 
 
 namespace myapp {
@@ -11,7 +13,8 @@ using cinder::app::KeyEvent;
 
 MyApp::MyApp() { }
 
-void MyApp::setup() { }
+void MyApp::setup() {
+}
 
 void MyApp::update() { }
 

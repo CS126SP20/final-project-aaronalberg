@@ -82,6 +82,18 @@ if(NOT cpp-httplib_POPULATED)
     target_include_directories(cpp-httplib INTERFACE ${cpp-httplib_SOURCE_DIR})
 endif()
 
+FetchContent_Declare(
+        httprequest
+        GIT_REPOSITORY https://github.com/elnormous/httprequest
+)
+
+FetchContent_GetProperties(httprequest)
+if(NOT httprequest_POPULATED)
+    FetchContent_Populate(httprequest)
+    add_library(httprequest INTERFACE)
+    target_include_directories(httprequest INTERFACE ${httprequest_SOURCE_DIR}/include)
+endif()
+
 # Testing library. Header-only.
 FetchContent_Declare(
     catch2
