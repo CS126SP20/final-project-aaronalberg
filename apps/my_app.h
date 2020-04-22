@@ -4,6 +4,8 @@
 #define FINALPROJECT_APPS_MYAPP_H_
 
 #include <cinder/app/App.h>
+#include <httplib.h>
+
 
 
 namespace myapp {
