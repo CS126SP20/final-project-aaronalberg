@@ -8,7 +8,7 @@
 
 
 
-namespace myapp {
+namespace homefinderapp {
 
 class MyApp : public cinder::app::App {
  public:
@@ -17,8 +17,16 @@ class MyApp : public cinder::app::App {
   void update() override;
   void draw() override;
   void keyDown(cinder::app::KeyEvent) override;
+  void mouseDown(cinder::app::MouseEvent) override;
+
+ private:
+  void DrawMessage();
+  void DrawButtons();
+
+ private:
+  int message_index_;
 };
 
-}  // namespace myapp
+}  // namespace homefinderapp
 
 #endif  // FINALPROJECT_APPS_MYAPP_H_

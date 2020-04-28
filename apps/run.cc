@@ -3,14 +3,13 @@
 #include <cinder/app/App.h>
 #include <cinder/app/RendererGl.h>
 
-#include "my_app.h"
-
+#include "home_finder_app.h"
 
 using cinder::app::App;
 using cinder::app::RendererGl;
 
 
-namespace myapp {
+namespace homefinderapp {
 
 const int kSamples = 8;
 const int kWidth = 800;
@@ -21,10 +20,10 @@ void SetUp(App::Settings* settings) {
   settings->setTitle("My CS 126 Application");
 }
 
-}  // namespace myapp
+}  // namespace homefinderapp
 
 
 // This is a macro that runs the application.
-CINDER_APP(myapp::MyApp,
-           RendererGl(RendererGl::Options().msaa(myapp::kSamples)),
-           myapp::SetUp)
+CINDER_APP(homefinderapp::MyApp,
+           RendererGl(RendererGl::Options().msaa(homefinderapp::kSamples)),
+           homefinderapp::SetUp)
