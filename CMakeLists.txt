@@ -111,3 +111,17 @@ if(NOT catch2_POPULATED)
 endif()
 
 # Add more CMake libraries here ...
+
+# Adds nlohmann_json library.
+
+FetchContent_Declare(
+        nlohmann_json
+        URL https://github.com/nlohmann/json/releases/download/v3.7.3/include.zip
+)
+
+FetchContent_GetProperties(nlohmann_json)
+if(NOT nlohmann_json_POPULATED)
+    FetchContent_Populate(nlohmann_json)
+    add_library(nlohmann_json INTERFACE)
+    target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR}/single_include)
+endif()

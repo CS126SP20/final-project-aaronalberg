@@ -22,6 +22,7 @@ class MyApp : public cinder::app::App {
  private:
   void DrawMessage();
   void DrawButtons();
+  void DrawNextButton();
 
  private:
   int message_index_;

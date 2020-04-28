@@ -9,7 +9,7 @@
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 #include <httplib.h>
-
+#include <nlohmann/json.hpp>
 #include <HTTPRequest.hpp>
 
 namespace homefinderapp {
@@ -25,8 +25,9 @@ using std::vector;
 
 const vector<string> kMessages = {
     "Welcome! Select your preferences to find your next home",
-    "Question 1",
-    "Question 2"};
+    "How important is low crime?",
+    "How important is low cost of living?",
+    "What is your ideal temperature?"};
 #if defined(CINDER_COCOA_TOUCH)
 const char kNormalFont[] = "Arial";
 const char kBoldFont[] = "Arial-BoldMT";
@@ -84,7 +85,7 @@ void PrintText(const string& text, const C& color, const cinder::ivec2& size,
 }
 
 void MyApp::draw() {
-  cinder::gl::clear(Color(.95,.95,.95));
+  cinder::gl::clear(Color(1,1,1));
   cinder::gl::color(Color(1, 0, 0));
   DrawMessage();
   DrawButtons();
@@ -99,17 +100,24 @@ void MyApp::DrawMessage() {
 }
 
 void MyApp::DrawButtons() {
+  DrawNextButton();
   if (message_index_ == 0) {
-    const cinder::vec2 center = getWindowCenter();
-    const cinder::ivec2 size = {100, 70};
-    cinder::gl::color(Color(.3,.3,.3));
-    cinder::gl::drawSolidRect(Rectf(
-        center.x - 50, center.y + 155,
-        center.x + 50, center.y + 210));
-
-    PrintText("Next", Color(0.878, 0.764, 0.956), size, {center.x, center.y + 200});
+    return;
   }
 
+
+}
+
+void MyApp::DrawNextButton() {
+  const cinder::vec2 center = getWindowCenter();
+  const cinder::ivec2 size = {100, 70};
+  cinder::gl::color(Color(.3,.3,.3));
+  cinder::gl::drawSolidRect(Rectf(
+      center.x - 50, center.y + 155,
+      center.x + 50, center.y + 210));
+
+  PrintText("Next", Color(0.878, 0.764, 0.956),
+            size, {center.x, center.y + 200});
 }
 
 
