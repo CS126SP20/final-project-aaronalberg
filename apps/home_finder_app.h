@@ -23,9 +23,12 @@ class MyApp : public cinder::app::App {
   void DrawMessage();
   void DrawButtons();
   void DrawNextButton();
+  void DrawCurrentResponse();
 
  private:
   int message_index_;
+  bool answering_question_;
+  std::string current_response_;
 };
 
 }  // namespace homefinderapp

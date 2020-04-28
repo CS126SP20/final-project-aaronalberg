@@ -46,17 +46,17 @@ MyApp::MyApp() { }
 
 void MyApp::setup() {
   message_index_ = 0;
-  try
-  {
+  answering_question_ = false;
+  current_response_ = "";
+
+  try {
     // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
     http::Request request("http://jsonplaceholder.typicode.com/todos/1");
 
     // send a get request
     const http::Response response = request.send("GET");
     std::cout << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
-  }
-  catch (const std::exception& e)
-  {
+  } catch (const std::exception& e) {
     std::cerr << "Request failed, error: " << e.what() << '\n';
   }
 }
@@ -89,7 +89,13 @@ void MyApp::draw() {
   cinder::gl::color(Color(1, 0, 0));
   DrawMessage();
   DrawButtons();
+  DrawCurrentResponse();
 
+}
+
+void MyApp::DrawCurrentResponse() {
+  const cinder::vec2 center = getWindowCenter();
+  PrintText(current_response_, Color(1,0,0), {150,50}, {center.x, center.y});
 }
 
 void MyApp::DrawMessage() {
@@ -97,6 +103,9 @@ void MyApp::DrawMessage() {
   const cinder::vec2 center = getWindowCenter();
   const cinder::ivec2 size = {500, 120};
   PrintText(kMessages[message_index_], Color(0,0,0), size,{center.x, center.y - 250});
+  if (message_index_ > 0) {
+    answering_question_ = true;
+  }
 }
 
 void MyApp::DrawButtons() {
@@ -121,7 +130,10 @@ void MyApp::DrawNextButton() {
 }
 
 
-void MyApp::keyDown(KeyEvent event) { }
+void MyApp::keyDown(KeyEvent event) {
+  if (!answering_question_) return;
+  current_response_ += event.getChar();
+}
 
 void MyApp::mouseDown(cinder::app::MouseEvent event) {
   const cinder::vec2 center = getWindowCenter();
@@ -131,6 +143,7 @@ void MyApp::mouseDown(cinder::app::MouseEvent event) {
   if (event.getX() > center.x - 50 && event.getX() < center.x + 50) {
     if (event.getY() > center.y + 155 && event.getY() < center.y + 210) {
       message_index_++;
+      current_response_ = "";
 
       //Not exceeding bounds for index
       if (message_index_ >= kMessages.size()) {
