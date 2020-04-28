@@ -24,6 +24,7 @@ class MyApp : public cinder::app::App {
   void DrawButtons();
   void DrawNextButton();
   void DrawCurrentResponse();
+  void DrawDirections();
 
  private:
   int message_index_;

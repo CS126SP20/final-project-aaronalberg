@@ -89,13 +89,12 @@ void MyApp::draw() {
   cinder::gl::color(Color(1, 0, 0));
   DrawMessage();
   DrawButtons();
-  DrawCurrentResponse();
-
+  if (!current_response_.empty()) DrawCurrentResponse();
 }
 
 void MyApp::DrawCurrentResponse() {
   const cinder::vec2 center = getWindowCenter();
-  PrintText(current_response_, Color(1,0,0), {150,50}, {center.x, center.y});
+  PrintText(current_response_ + "%", Color(1,0,0), {150,50}, {center.x, center.y});
 }
 
 void MyApp::DrawMessage() {
@@ -105,6 +104,7 @@ void MyApp::DrawMessage() {
   PrintText(kMessages[message_index_], Color(0,0,0), size,{center.x, center.y - 250});
   if (message_index_ > 0) {
     answering_question_ = true;
+    DrawDirections();
   }
 }
 
@@ -113,8 +113,12 @@ void MyApp::DrawButtons() {
   if (message_index_ == 0) {
     return;
   }
+}
 
-
+void MyApp::DrawDirections() {
+  const cinder::vec2 center = getWindowCenter();
+  string message = "Enter a percentage between 1 and 99";
+  PrintText(message, Color(0,0,0), {350, 85},{center.x, center.y - 175});
 }
 
 void MyApp::DrawNextButton() {
@@ -124,7 +128,6 @@ void MyApp::DrawNextButton() {
   cinder::gl::drawSolidRect(Rectf(
       center.x - 50, center.y + 155,
       center.x + 50, center.y + 210));
-
   PrintText("Next", Color(0.878, 0.764, 0.956),
             size, {center.x, center.y + 200});
 }
@@ -132,7 +135,13 @@ void MyApp::DrawNextButton() {
 
 void MyApp::keyDown(KeyEvent event) {
   if (!answering_question_) return;
-  current_response_ += event.getChar();
+  int key = event.getChar();
+  if (current_response_.size() >= 2) return;
+
+  //ASCII codes representing digits 0 - 9
+  if (key >= 48 && key <= 57) {
+    current_response_ += event.getChar();
+  }
 }
 
 void MyApp::mouseDown(cinder::app::MouseEvent event) {
