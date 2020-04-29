@@ -2,15 +2,6 @@
 
 #include "home_finder_app.h"
 
-#include <cinder/Font.h>
-#include <cinder/Text.h>
-#include <cinder/Vector.h>
-#include <cinder/app/App.h>
-#include <cinder/gl/draw.h>
-#include <cinder/gl/gl.h>
-#include <httplib.h>
-#include <nlohmann/json.hpp>
-#include <HTTPRequest.hpp>
 
 namespace homefinderapp {
 
@@ -27,7 +18,12 @@ const vector<string> kMessages = {
     "Welcome! Select your preferences to find your next home",
     "How important is low crime?",
     "How important is low cost of living?",
+    "How important is quality healthcare?",
+    "How important is good air quality?",
     "What is your ideal temperature?"};
+const string kEndingMessage = "Based on your preferences, you should live in: ";
+const Color kThemeColor(0.878, 0.764, 0.956);
+
 #if defined(CINDER_COCOA_TOUCH)
 const char kNormalFont[] = "Arial";
 const char kBoldFont[] = "Arial-BoldMT";
@@ -42,13 +38,18 @@ const char kBoldFont[] = "Arial Bold";
 const char kDifferentFont[] = "Papyrus";
 #endif
 
-MyApp::MyApp() { }
+MyApp::MyApp()
+  : message_index_{0},
+    ended_{false},
+    answering_question_{false},
+    center{getWindowCenter()},
+    city_{"Chicago"},
+    answered_{true},
+    is_start_{message_index_ == 0},
+    current_response_{""} {}
+
 
 void MyApp::setup() {
-  message_index_ = 0;
-  answering_question_ = false;
-  current_response_ = "";
-
   try {
     // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
     http::Request request("http://jsonplaceholder.typicode.com/todos/1");
@@ -61,7 +62,35 @@ void MyApp::setup() {
   }
 }
 
-void MyApp::update() { }
+void MyApp::update() {
+  center = getWindowCenter();
+  if (!is_start_) {
+    answering_question_ = true;
+  }
+
+  if (message_index_ == kMessages.size() - 1) {
+    ended_ = true;
+  }
+
+  if (message_index_ != 0) {
+    is_start_ = false;
+  }
+}
+
+void MyApp::draw() {
+  cinder::gl::clear(Color(1,1,1));
+  cinder::gl::color(Color(1, 0, 0));
+  if (ended_) {
+    DrawEnd();
+    return;
+  }
+
+  DrawMessage();
+  DrawButtons();
+  if (!current_response_.empty()) DrawCurrentResponse();
+  if (answering_question_) DrawDirections();
+  if (!answered_ && !is_start_) DrawErrorMessage();
+}
 
 //Function courtesy of CS126 Snake MP
 template <typename C>
@@ -84,51 +113,46 @@ void PrintText(const string& text, const C& color, const cinder::ivec2& size,
   cinder::gl::draw(texture, locp);
 }
 
-void MyApp::draw() {
-  cinder::gl::clear(Color(1,1,1));
-  cinder::gl::color(Color(1, 0, 0));
-  DrawMessage();
-  DrawButtons();
-  if (!current_response_.empty()) DrawCurrentResponse();
+void MyApp::DrawEnd() {
+  PrintText(kEndingMessage, Color(0,0,0),
+      {500, 100}, {center.x, center.y - 250});
+  PrintText(city_, kThemeColor, {150, 50}, {center.x, center.y});
 }
 
 void MyApp::DrawCurrentResponse() {
-  const cinder::vec2 center = getWindowCenter();
-  PrintText(current_response_ + "%", Color(1,0,0), {150,50}, {center.x, center.y});
+  PrintText(current_response_ + "%", Color(1,0,0),
+      {150,50}, {center.x, center.y});
 }
 
 void MyApp::DrawMessage() {
-  //message_index_ = 1;
-  const cinder::vec2 center = getWindowCenter();
   const cinder::ivec2 size = {500, 120};
-  PrintText(kMessages[message_index_], Color(0,0,0), size,{center.x, center.y - 250});
-  if (message_index_ > 0) {
-    answering_question_ = true;
-    DrawDirections();
-  }
+  PrintText(kMessages[message_index_],Color(0,0,0),
+      size,{center.x, center.y - 250});
 }
 
 void MyApp::DrawButtons() {
   DrawNextButton();
-  if (message_index_ == 0) {
-    return;
-  }
+  if (is_start_) return;
 }
 
 void MyApp::DrawDirections() {
-  const cinder::vec2 center = getWindowCenter();
-  string message = "Enter a percentage between 1 and 99";
-  PrintText(message, Color(0,0,0), {350, 85},{center.x, center.y - 175});
+  string directions = "Enter a percentage between 1 and 99";
+  PrintText(directions, Color(0,0,0),
+      {350, 85},{center.x, center.y - 175});
+}
+
+void MyApp::DrawErrorMessage() {
+  string error = "You must enter a percentage";
+  PrintText(error, Color(1,0,0),
+            {350, 85},{center.x, center.y + 300});
 }
 
 void MyApp::DrawNextButton() {
-  const cinder::vec2 center = getWindowCenter();
   const cinder::ivec2 size = {100, 70};
   cinder::gl::color(Color(.3,.3,.3));
-  cinder::gl::drawSolidRect(Rectf(
-      center.x - 50, center.y + 155,
-      center.x + 50, center.y + 210));
-  PrintText("Next", Color(0.878, 0.764, 0.956),
+  cinder::gl::drawSolidRect(Rectf(center.x - 50,
+      center.y + 155, center.x + 50, center.y + 210));
+  PrintText("Next", kThemeColor,
             size, {center.x, center.y + 200});
 }
 
@@ -136,25 +160,33 @@ void MyApp::DrawNextButton() {
 void MyApp::keyDown(KeyEvent event) {
   if (!answering_question_) return;
   int key = event.getChar();
-  if (current_response_.size() >= 2) return;
 
   //ASCII codes representing digits 0 - 9
   if (key >= 48 && key <= 57) {
+    if (current_response_.size() >= 2) return;
     current_response_ += event.getChar();
+  } else {
+    current_response_ = "";
   }
 }
 
 void MyApp::mouseDown(cinder::app::MouseEvent event) {
-  const cinder::vec2 center = getWindowCenter();
   if (!event.isLeftDown()) return;
 
   //Next button clicked
-  if (event.getX() > center.x - 50 && event.getX() < center.x + 50) {
+  if (event.getX() > center.x - 50 &&
+  event.getX() < center.x + 50) {
     if (event.getY() > center.y + 155 && event.getY() < center.y + 210) {
-      message_index_++;
+      if (current_response_ == "" && !is_start_) {
+        answered_ = false;
+        return;
+      }
+
       current_response_ = "";
 
-      //Not exceeding bounds for index
+      //Cap index so it doesn't go out of bounds
+      message_index_++;
+      answered_ = true;
       if (message_index_ >= kMessages.size()) {
         message_index_ = kMessages.size() - 1;
       }

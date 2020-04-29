@@ -4,7 +4,15 @@
 #define FINALPROJECT_APPS_MYAPP_H_
 
 #include <cinder/app/App.h>
+#include <cinder/Font.h>
+#include <cinder/Text.h>
+#include <cinder/Vector.h>
+#include <cinder/app/App.h>
+#include <cinder/gl/draw.h>
+#include <cinder/gl/gl.h>
 #include <httplib.h>
+#include <nlohmann/json.hpp>
+#include <HTTPRequest.hpp>
 
 
 
@@ -25,11 +33,18 @@ class MyApp : public cinder::app::App {
   void DrawNextButton();
   void DrawCurrentResponse();
   void DrawDirections();
+  void DrawEnd();
+  void DrawErrorMessage();
 
  private:
   int message_index_;
   bool answering_question_;
+  bool ended_;
+  bool answered_;
+  bool is_start_;
+  cinder::vec2 center;
   std::string current_response_;
+  std::string city_;
 };
 
 }  // namespace homefinderapp
