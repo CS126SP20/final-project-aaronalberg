@@ -11,9 +11,11 @@ using cinder::ColorA;
 using cinder::Rectf;
 using cinder::TextBox;
 using cinder::app::KeyEvent;
+
 using std::string;
 using std::vector;
 using std::stringstream;
+
 using nlohmann::json;
 
 using std::cout;
@@ -55,22 +57,18 @@ MyApp::MyApp()
 
 
 void MyApp::setup() {
+  cities_ = ParseJSON();
+  cout << cities_[0].name << endl;
   try {
     // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
     http::Request request("http://jsonplaceholder.typicode.com/todos/1");
 
     // send a get request
     const http::Response response = request.send("GET");
-    //std::cout << string(response.body.begin(), response.body.end()) << '\n';
+
+    //writing JSON from request
     json obj;
     stringstream stream;
-
-    // read a JSON file
-    std::ifstream json_file;
-    json_file.open(cinder::app::getAssetPath("population.json").c_str());
-    json population_data = json::parse(json_file);
-
-    cout << population_data[50] << endl;
 
     stream << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
     stream >> obj;
@@ -211,6 +209,26 @@ void MyApp::mouseDown(cinder::app::MouseEvent event) {
       }
     }
   }
+}
+std::vector<mylibrary::City> MyApp::ParseJSON() {
+
+  std::ifstream json_file;
+  json_file.open(cinder::app::getAssetPath("population.json").c_str());
+  json population_data = json::parse(json_file);
+
+  vector<mylibrary::City> cities;
+  for (auto& i : population_data) {
+    if (i["population"] == nullptr) {
+      break;
+    }
+
+    mylibrary::City new_city(i["city_ascii"],
+        i["population"],
+        i["lat"], i["lng"]);
+    cities.push_back(new_city);
+  }
+
+  return cities;
 }
 
 }  // namespace homefinderapp

@@ -13,6 +13,8 @@
 #include <httplib.h>
 #include <nlohmann/json.hpp>
 #include <HTTPRequest.hpp>
+#include <mylibrary/city.h>
+
 
 
 
@@ -35,6 +37,7 @@ class MyApp : public cinder::app::App {
   void DrawDirections();
   void DrawEnd();
   void DrawErrorMessage();
+  std::vector<mylibrary::City> ParseJSON();
 
  private:
   int message_index_;
@@ -45,6 +48,7 @@ class MyApp : public cinder::app::App {
   cinder::vec2 center;
   std::string current_response_;
   std::string city_;
+  std::vector<mylibrary::City> cities_;
 };
 
 }  // namespace homefinderapp
