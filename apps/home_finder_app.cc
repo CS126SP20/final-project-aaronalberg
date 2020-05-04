@@ -13,6 +13,11 @@ using cinder::TextBox;
 using cinder::app::KeyEvent;
 using std::string;
 using std::vector;
+using std::stringstream;
+using nlohmann::json;
+
+using std::cout;
+using std::endl;
 
 const vector<string> kMessages = {
     "Welcome! Select your preferences to find your next home",
@@ -56,7 +61,21 @@ void MyApp::setup() {
 
     // send a get request
     const http::Response response = request.send("GET");
-    std::cout << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
+    //std::cout << string(response.body.begin(), response.body.end()) << '\n';
+    json obj;
+    stringstream stream;
+
+    // read a JSON file
+    std::ifstream json_file;
+    json_file.open(cinder::app::getAssetPath("population.json").c_str());
+    json population_data = json::parse(json_file);
+
+    cout << population_data[50] << endl;
+
+    stream << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
+    stream >> obj;
+    std::cout << obj["title"] << std::endl;
+
   } catch (const std::exception& e) {
     std::cerr << "Request failed, error: " << e.what() << '\n';
   }
@@ -132,7 +151,7 @@ void MyApp::DrawMessage() {
 
 void MyApp::DrawButtons() {
   DrawNextButton();
-  if (is_start_) return;
+  if (is_start_) return; //TODO check this
 }
 
 void MyApp::DrawDirections() {

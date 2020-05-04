@@ -1,5 +1,11 @@
 # Development
 
+##5/3/2020
+- Json serialization/deserialization functional
+- Changed population data from API to local static dataset
+- Integrated dataset
+- Parsing JSON and beginning classification
+
 ##4/29/2020
 - Clicking and typing flow to answer questions
 
