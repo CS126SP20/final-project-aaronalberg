@@ -41,6 +41,7 @@ class MyApp : public cinder::app::App {
 
  private:
   int message_index_;
+  int direction_index_;
   bool answering_question_;
   bool ended_;
   bool answered_;

@@ -23,11 +23,16 @@ using std::endl;
 
 const vector<string> kMessages = {
     "Welcome! Select your preferences to find your next home",
+    "What is your ideal temperature on a summer day?",
+    "What is your ideal metropolitan area population?",
     "How important is low crime?",
     "How important is low cost of living?",
     "How important is quality healthcare?",
-    "How important is good air quality?",
-    "What is your ideal temperature?"};
+    "How important is good air quality?"};
+const vector<string> kDirections = {
+    "Enter a value between 1 and 99",
+    "Enter a value between 0 and 35 million",
+    "Enter a percentage between 1 and 99"};
 const string kEndingMessage = "Based on your preferences, you should live in: ";
 const Color kThemeColor(0.878, 0.764, 0.956);
 
@@ -47,6 +52,7 @@ const char kDifferentFont[] = "Papyrus";
 
 MyApp::MyApp()
   : message_index_{0},
+    direction_index_{0},
     ended_{false},
     answering_question_{false},
     center{getWindowCenter()},
@@ -57,8 +63,10 @@ MyApp::MyApp()
 
 
 void MyApp::setup() {
+  cinder::gl::enableDepthWrite();
+  cinder::gl::enableDepthRead();
   cities_ = ParseJSON();
-  cout << cities_[0].name << endl;
+
   try {
     // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
     http::Request request("http://jsonplaceholder.typicode.com/todos/1");
@@ -137,7 +145,7 @@ void MyApp::DrawEnd() {
 }
 
 void MyApp::DrawCurrentResponse() {
-  PrintText(current_response_ + "%", Color(1,0,0),
+  PrintText(current_response_, Color(1,0,0),
       {150,50}, {center.x, center.y});
 }
 
@@ -153,13 +161,20 @@ void MyApp::DrawButtons() {
 }
 
 void MyApp::DrawDirections() {
-  string directions = "Enter a percentage between 1 and 99";
-  PrintText(directions, Color(0,0,0),
+  if (message_index_ == 1) {
+    direction_index_ = 0;
+  } else if (message_index_ == 2) {
+    direction_index_ = 1;
+  } else {
+    direction_index_ = 2;
+  }
+
+  PrintText(kDirections[direction_index_], Color(0,0,0),
       {350, 85},{center.x, center.y - 175});
 }
 
 void MyApp::DrawErrorMessage() {
-  string error = "You must enter a percentage";
+  string error = "You must enter a response";
   PrintText(error, Color(1,0,0),
             {350, 85},{center.x, center.y + 300});
 }
@@ -180,7 +195,20 @@ void MyApp::keyDown(KeyEvent event) {
 
   //ASCII codes representing digits 0 - 9
   if (key >= 48 && key <= 57) {
-    if (current_response_.size() >= 2) return;
+
+    int cap = 0;
+    switch (direction_index_) {
+      case 0 :
+        cap = 2;
+        break;
+      case 1 :
+        cap = 8;
+        break;
+      case 2 :
+        cap = 2;
+    }
+
+    if (current_response_.size() >= cap) return;
     current_response_ += event.getChar();
   } else {
     current_response_ = "";
