@@ -10,10 +10,10 @@
 #include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
-#include <httplib.h>
 #include <nlohmann/json.hpp>
+#include <httplib.h>
 #include <HTTPRequest.hpp>
-#include <mylibrary/city.h>
+#include <homefinder/city.h>
 
 
 
@@ -37,7 +37,7 @@ class MyApp : public cinder::app::App {
   void DrawDirections();
   void DrawEnd();
   void DrawErrorMessage();
-  std::vector<mylibrary::City> ParseJSON();
+  std::vector<homefinder::City> ParseJSON();
 
  private:
   int message_index_;
@@ -46,10 +46,12 @@ class MyApp : public cinder::app::App {
   bool ended_;
   bool answered_;
   bool is_start_;
+  bool city_found_;
   cinder::vec2 center;
   std::string current_response_;
   std::string city_;
-  std::vector<mylibrary::City> cities_;
+  std::vector<homefinder::City> cities_;
+  std::vector<double> responses_;
 };
 
 }  // namespace homefinderapp

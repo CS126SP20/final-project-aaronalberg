@@ -1,5 +1,16 @@
 # Development
 
+##5/4/2020
+- Climate API changed to World Weather Online
+- Added population question, modified question directions
+- Passed info from user to engine
+
+Working on:
+- Making engine funcitonal
+- Actually starting to make API calls
+- Testing
+
+
 ##5/3/2020
 - Json serialization/deserialization functional
 - Changed population data from API to local static dataset

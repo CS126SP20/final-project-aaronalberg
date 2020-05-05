@@ -2,6 +2,8 @@
 
 #include "home_finder_app.h"
 
+#include <homefinder/city.h>
+#include <homefinder/engine.h>
 
 namespace homefinderapp {
 
@@ -28,13 +30,14 @@ const vector<string> kMessages = {
     "How important is low crime?",
     "How important is low cost of living?",
     "How important is quality healthcare?",
-    "How important is good air quality?"};
+    "How important is good air quality?",
+    "The end."};
 const vector<string> kDirections = {
     "Enter a value between 1 and 99",
     "Enter a value between 0 and 35 million",
     "Enter a percentage between 1 and 99"};
 const string kEndingMessage = "Based on your preferences, you should live in: ";
-const Color kThemeColor(0.878, 0.764, 0.956);
+const Color kThemeColor(1,0,0);
 
 #if defined(CINDER_COCOA_TOUCH)
 const char kNormalFont[] = "Arial";
@@ -55,6 +58,7 @@ MyApp::MyApp()
     direction_index_{0},
     ended_{false},
     answering_question_{false},
+    city_found_{false},
     center{getWindowCenter()},
     city_{"Chicago"},
     answered_{true},
@@ -63,9 +67,14 @@ MyApp::MyApp()
 
 
 void MyApp::setup() {
-  cinder::gl::enableDepthWrite();
-  cinder::gl::enableDepthRead();
   cities_ = ParseJSON();
+  // IMPORTANT: 1st parameter must be a hostname or an IP adress string.
+  httplib::Client cli("localhost", 1234);
+
+  auto res = cli.Get("http://jsonplaceholder.typicode.com/todos/1");
+  if (res && res->status == 200) {
+    std::cout << res->body << std::endl;
+  }
 
   try {
     // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
@@ -73,18 +82,12 @@ void MyApp::setup() {
 
     // send a get request
     const http::Response response = request.send("GET");
-
-    //writing JSON from request
-    json obj;
-    stringstream stream;
-
-    stream << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
-    stream >> obj;
-    std::cout << obj["title"] << std::endl;
-
-  } catch (const std::exception& e) {
+    std::cout << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
+  }
+  catch (const std::exception& e) {
     std::cerr << "Request failed, error: " << e.what() << '\n';
   }
+
 }
 
 void MyApp::update() {
@@ -106,6 +109,12 @@ void MyApp::draw() {
   cinder::gl::clear(Color(1,1,1));
   cinder::gl::color(Color(1, 0, 0));
   if (ended_) {
+    if (!city_found_) {
+      homefinder::Engine engine(cities_, responses_);
+      city_ = engine.FindIdealCity();
+      city_found_ = true;
+    }
+
     DrawEnd();
     return;
   }
@@ -181,7 +190,7 @@ void MyApp::DrawErrorMessage() {
 
 void MyApp::DrawNextButton() {
   const cinder::ivec2 size = {100, 70};
-  cinder::gl::color(Color(.3,.3,.3));
+  cinder::gl::color(Color(0,0,0));
   cinder::gl::drawSolidRect(Rectf(center.x - 50,
       center.y + 155, center.x + 50, center.y + 210));
   PrintText("Next", kThemeColor,
@@ -197,18 +206,20 @@ void MyApp::keyDown(KeyEvent event) {
   if (key >= 48 && key <= 57) {
 
     int cap = 0;
-    switch (direction_index_) {
-      case 0 :
-        cap = 2;
-        break;
-      case 1 :
-        cap = 8;
-        break;
-      case 2 :
-        cap = 2;
+    if (direction_index_ == 1) {
+      cap = 8; //number of digits in 35 million
+    } else {
+      cap = 2; //number of digits in temperature or percentage
     }
 
-    if (current_response_.size() >= cap) return;
+    if (current_response_.size() >= cap) {
+      if (cap == 8 & std::stoi(current_response_) > 35000000) {
+        current_response_ = "";
+      }
+
+      return;
+    }
+
     current_response_ += event.getChar();
   } else {
     current_response_ = "";
@@ -227,6 +238,7 @@ void MyApp::mouseDown(cinder::app::MouseEvent event) {
         return;
       }
 
+      if (!is_start_) responses_.push_back(stod(current_response_));
       current_response_ = "";
 
       //Cap index so it doesn't go out of bounds
@@ -238,19 +250,19 @@ void MyApp::mouseDown(cinder::app::MouseEvent event) {
     }
   }
 }
-std::vector<mylibrary::City> MyApp::ParseJSON() {
+std::vector<homefinder::City> MyApp::ParseJSON() {
 
   std::ifstream json_file;
   json_file.open(cinder::app::getAssetPath("population.json").c_str());
   json population_data = json::parse(json_file);
 
-  vector<mylibrary::City> cities;
+  vector<homefinder::City> cities;
   for (auto& i : population_data) {
     if (i["population"] == nullptr) {
       break;
     }
 
-    mylibrary::City new_city(i["city_ascii"],
+    homefinder::City new_city(i["city_ascii"],
         i["population"],
         i["lat"], i["lng"]);
     cities.push_back(new_city);

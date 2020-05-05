@@ -1,8 +1,8 @@
 // Copyright (c) 2020 Aaron Alberg. All rights reserved.
 
-#include <mylibrary/city.h>
+#include <homefinder/city.h>
 
-namespace mylibrary {
+namespace homefinder {
 
 City::City(const std::string& name, const double& population, const double& lat,
            const double& lng) {
@@ -11,4 +11,4 @@ City::City(const std::string& name, const double& population, const double& lat,
   this->lat = lat;
   this->lng = lng;
 }
-}  // namespace mylibrary
+}  // namespace homefinder

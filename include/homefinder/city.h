@@ -1,11 +1,11 @@
-// Copyright (c) 2020 [Your Name]. All rights reserved.
+// Copyright (c) 2020 Aaron Alberg. All rights reserved.
 #ifndef FINALPROJECT_MYLIBRARY_EXAMPLE_H_
 #define FINALPROJECT_MYLIBRARY_EXAMPLE_H_
 
 #include <string>
 
 
-namespace mylibrary {
+namespace homefinder {
 
 struct City {
   City(const std::string& name, const double& population, const double& lat, const double& lng);
@@ -19,7 +19,7 @@ struct City {
 
 };
 
-}  // namespace mylibrary
+}  // namespace homefinder
 
 
 #endif // FINALPROJECT_MYLIBRARY_EXAMPLE_H_
