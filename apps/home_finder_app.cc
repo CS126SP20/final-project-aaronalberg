@@ -69,23 +69,15 @@ MyApp::MyApp()
 void MyApp::setup() {
   cout << "start" << endl;
   cities_ = ParseJSON();
-  cout << "json" << endl;
-  // IMPORTANT: 1st parameter must be a hostname or an IP adress string.
-  httplib::Client cli("localhost", 1234);
+  cout << "after json" << endl;
 
-  auto res = cli.Get("http://jsonplaceholder.typicode.com/todos/1");
-
-  if (res && res->status == 200) {
-    std::cout << res->body << std::endl;
-  }
-
-  cout << "FLAPPPPP" << endl;
   try {
     // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
     http::Request request("http://jsonplaceholder.typicode.com/todos/1");
 
     // send a get request
     const http::Response response = request.send("GET");
+    cout << "Please for the love of god print" << endl;
     std::cout << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
   }
   catch (const std::exception& e) {
