@@ -17,6 +17,8 @@ struct City {
   double temperature;
   double crime_index;
   double healthcare_index;
+  double pollution_index;
+  double col_index; //Cost of Living
   double lat;
   double lng;
 

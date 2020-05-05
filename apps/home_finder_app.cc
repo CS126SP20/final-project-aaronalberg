@@ -82,14 +82,18 @@ void MyApp::setup() {
   try {
     // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
     cout << "1" << endl;
-    http::Request request("http://jsonplaceholder.typicode.com/todos/1");
+    http::Request request("http://www.numbeo.com:8008/api/indices?api_key=hbtoxypuja22wp&query=Tokyo");
     cout << "2" << endl;
 
     // send a get request
-    http::Response response = request.send("GET");
-    cout << "3" << endl;
+    const http::Response response = request.send("GET");
+    cout << "headers " << endl;
+    for (auto& e : response.headers) {
+      cout << e << endl;
+    }
     cout << "Please for the love of god print" << endl;
     std::cout << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
+    cout << "3" << endl;
   }
   catch (const std::exception& e) {
     std::cerr << "Request failed, error: " << e.what() << '\n';
@@ -274,6 +278,18 @@ std::vector<homefinder::City> MyApp::ParseJSON() {
         i["lat"], i["lng"]);
     cities.push_back(new_city);
   }
+
+  std::ifstream json_file2;
+  json_file2.open(cinder::app::getAssetPath("past-weather.json").c_str());
+  json data = json::parse(json_file2);
+  cout << "HI" << endl;
+  cout << data["data"]["weather"][0]["maxtempF"] << endl;
+  for (auto& e : data["data"]["weather"]) {
+    for (auto& f : e) {
+      cout << f << endl;
+    }
+  }
+
 
   return cities;
 }

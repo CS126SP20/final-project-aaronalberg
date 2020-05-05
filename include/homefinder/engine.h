@@ -20,14 +20,20 @@ class Engine {
   std::string FindIdealCity();
 
  private:
-  std::vector<homefinder::City> NarrowByPopulation();
-  std::vector<homefinder::City> NarrowByWeather();
+  void NarrowByPopulation();
+  void NarrowByWeather();
+  void NarrowByCrime();
+  void NarrowByCoL();
+  void NarrowByHealthcare();
+  void NarrowByPollution();
+  void GenerateParameterData();
 
  private:
   std::vector<homefinder::City> all_cities_;
   std::vector<homefinder::City> narrowed_list_;
   std::vector<double> responses_;
 };
-}
+
+}  // namespace homefinder
 
 #endif  // FINALPROJECT_ENGINE_H
