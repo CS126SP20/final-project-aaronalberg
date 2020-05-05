@@ -1,9 +1,7 @@
 // Copyright (c) 2020 Aaron Alberg. All rights reserved.
 
 #include "home_finder_app.h"
-
-#include <homefinder/city.h>
-#include <homefinder/engine.h>
+#include <httplib.h>
 
 namespace homefinderapp {
 
@@ -71,12 +69,25 @@ void MyApp::setup() {
   cities_ = ParseJSON();
   cout << "after json" << endl;
 
+  /*
+  // IMPORTANT: 1st parameter must be a hostname or an IP adress string.
+  httplib::Client cli("localhost", 1234);
+  cli.set_timeout_sec(30);
+  auto res = cli.Get("http://jsonplaceholder.typicode.com/todos/1");
+  if (res && res->status == 200) {
+    std::cout << res->body << std::endl;
+  }
+   */
+
   try {
     // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
+    cout << "1" << endl;
     http::Request request("http://jsonplaceholder.typicode.com/todos/1");
+    cout << "2" << endl;
 
     // send a get request
-    const http::Response response = request.send("GET");
+    http::Response response = request.send("GET");
+    cout << "3" << endl;
     cout << "Please for the love of god print" << endl;
     std::cout << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
   }

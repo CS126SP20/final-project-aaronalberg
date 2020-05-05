@@ -11,12 +11,10 @@
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 #include <nlohmann/json.hpp>
-#include <httplib.h>
 #include <HTTPRequest.hpp>
 #include <homefinder/city.h>
-
-
-
+#include <homefinder/city.h>
+#include <homefinder/engine.h>
 
 namespace homefinderapp {
 
@@ -37,7 +35,7 @@ class MyApp : public cinder::app::App {
   void DrawDirections();
   void DrawEnd();
   void DrawErrorMessage();
-  std::vector<homefinder::City> ParseJSON();
+  std::vector<homefinder::City> ParseJSON(); //NOLINT
 
  private:
   int message_index_;

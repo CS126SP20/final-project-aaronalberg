@@ -2,7 +2,6 @@
 
 #include <cinder/app/App.h>
 #include <cinder/app/RendererGl.h>
-
 #include "home_finder_app.h"
 
 using cinder::app::App;

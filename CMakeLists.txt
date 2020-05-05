@@ -85,6 +85,9 @@ endif()
 FetchContent_Declare(
         httprequest
         GIT_REPOSITORY https://github.com/elnormous/httprequest
+        GIT_TAG d31af3c754ed64b0f066e0a899862d3d6e7ffbb2
+
+
 )
 
 FetchContent_GetProperties(httprequest)

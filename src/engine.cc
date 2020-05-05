@@ -57,25 +57,19 @@ std::vector<homefinder::City> Engine::NarrowByWeather() {
 
 
   try {
-    cout << "flip flop" << endl;
     // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
     http::Request request("http://jsonplaceholder.typicode.com/todos/1");
 
-    cout << "HALP ME" << endl;
     // send a get request
     const http::Response response = request.send("GET");
-    cout << "skip skop" << endl;
     std::cout << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
 
-    cout << "blorf skorf" << endl;
     //writing JSON from request
     json obj;
     stringstream stream;
 
     stream << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
     stream >> obj;
-    cout << "end" << endl;
-    //std::cout << obj["title"] << std::endl;
 
   } catch (const std::exception& e) {
     std::cerr << "Request failed, error: " << e.what() << '\n';
