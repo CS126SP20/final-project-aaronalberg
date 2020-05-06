@@ -16,17 +16,16 @@ namespace homefinder {
 
 class Engine {
  public:
-  Engine(const std::vector<homefinder::City>& cities, const std::vector<double>& responses);
-  std::string FindIdealCity();
+  Engine(const std::vector<homefinder::City>& cities,
+         const std::vector<double>& responses);
+  homefinder::City FindIdealCity();
 
  private:
   void NarrowByPopulation();
   void NarrowByWeather();
-  void NarrowByCrime();
-  void NarrowByCoL();
-  void NarrowByHealthcare();
-  void NarrowByPollution();
   void GenerateParameterData();
+  std::vector<std::vector<double>> CalculateWeights();
+  int FindBestMatchIndex(const std::vector<std::vector<double>>& all_weights);
 
  private:
   std::vector<homefinder::City> all_cities_;

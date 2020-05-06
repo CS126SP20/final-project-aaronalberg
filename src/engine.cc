@@ -21,12 +21,14 @@ const string kWeatherUrl = "http://api.worldweatheronline.com/premium/v1"
 
 namespace homefinder {
 
-Engine::Engine(const std::vector<homefinder::City>& cities, const std::vector<double>& responses) {
+Engine::Engine(const std::vector<homefinder::City>& cities,
+               const std::vector<double>& responses) {
   all_cities_ = cities;
   responses_ = responses;
+  narrowed_list_.clear();
 }
 
-string Engine::FindIdealCity() {
+homefinder::City Engine::FindIdealCity() {
 
   // Question indices (in responses_):
   // Weather(0), Population(1), Crime(2), CoL(3), Healthcare(4), Pollution(5)
@@ -34,57 +36,47 @@ string Engine::FindIdealCity() {
   //NarrowByWeather();
 
   GenerateParameterData();
-  NarrowByCrime();
-  NarrowByCoL();
-  NarrowByHealthcare();
-  NarrowByPollution();
+  vector<vector<double>> all_weights = CalculateWeights();
+  int best_match_index = FindBestMatchIndex(all_weights);
 
-  try {
-    string result = narrowed_list_[0].name;
-    return result;
-  } catch (std::exception& exception) {
-    return "Chicago"; // Default just in case
-  }
+  return narrowed_list_[0];
 }
 
 void Engine::GenerateParameterData() {
   for (homefinder::City& city : narrowed_list_) {
+    string city_name = city.name;
+    int space_index = city_name.find(' ');
+    if (space_index != string::npos) {
+      city_name.replace(space_index, 1, "%20");
+    }
+    json json_object;
+    stringstream stream;
+
     try {
-
-      string city_name = city.name;
-      int space_index = city_name.find(' ');
-      if (space_index != string::npos) {
-        city_name.replace(space_index, 1, "%20");
-      }
-
-      string url = kNumbeoUrl + city_name;
-      http::Request request(url);
-
-      // send a get request
+      http::Request request(kNumbeoUrl + city_name);
       http::Response response = request.send("GET");
 
-      // print the result
-      std::cout << std::string(response.body.begin(), response.body.end()) << '\n';
-
-      //writing JSON from request
-      nlohmann::json obj;
-      stringstream stream;
-
       stream << std::string(response.body.begin(), response.body.end()) << '\n';
-      stream >> obj;
-
-      city.crime_index = obj["crime_index"];
-      city.healthcare_index = obj["health_care_index"];
-      city.col_index = obj["cpi_and_rent_index"];
-      city.pollution_index = obj["pollution_index"];
-
-      cout << city.pollution_index << endl;
-      cout << city.name << endl;
-      cout << city.crime_index << endl;
-      cout << city.population << endl;
+      stream >> json_object;
 
     } catch (const std::exception& e) {
       std::cerr << "Request failed, error: " << e.what() << '\n';
+      std::cerr << "City " << city.name << endl;
+    }
+
+    try {
+      city.crime_index = json_object["crime_index"];
+      city.col_index = json_object["cpi_and_rent_index"];
+      city.healthcare_index = json_object["health_care_index"];
+      city.pollution_index = json_object["pollution_index"];
+
+      cout << city.crime_index << endl;
+      cout << city.col_index << endl;
+      cout << city.healthcare_index << endl;
+      cout << city.pollution_index << endl;
+    } catch (std::exception& e) {
+      cout << city.name << endl;
+      cout << "ERROR" << endl;
     }
 
 
@@ -103,13 +95,17 @@ void Engine::NarrowByPopulation() {
       }
     }
 
+    //if not enough are close, slowly increase allowable error
     error += .02;
+
+    while (narrowed_list.size() > 25) {
+      narrowed_list.pop_back();
+    }
   }
 
-  //cout << narrowed_list.size() << "  size" << endl;
-  //cout << narrowed_list[3].name << endl;
   narrowed_list_ = narrowed_list;
 }
+
 void Engine::NarrowByWeather() {
 
   try {
@@ -138,17 +134,61 @@ void Engine::NarrowByWeather() {
 
 }
 
-void Engine::NarrowByCrime() {
+vector<vector<double>> Engine::CalculateWeights() {
+  vector<vector<double>> all_cities_weights;
+  for (homefinder::City& city : narrowed_list_) {
+    vector<double> city_weights;
+
+    // Question indices (in responses_):
+    // Weather(0), Population(1), Crime(2), CoL(3), Healthcare(4), Pollution(5)
+    for (int i = 2; i < responses_.size(); i++) {
+      double parameter_weight;
+
+      switch (i) {
+        case 2:
+          parameter_weight = responses_[i] * city.crime_index;
+          break;
+        case 3:
+          parameter_weight = responses_[i] * city.col_index;
+          break;
+        case 4:
+          parameter_weight = responses_[i] * city.healthcare_index;
+          break;
+        case 5:
+          parameter_weight = responses_[i] * city.pollution_index;
+          break;
+      }
+
+      city_weights.push_back(parameter_weight);
+    }
+
+    all_cities_weights.push_back(city_weights);
+  }
+
+  return all_cities_weights;
 }
 
-void Engine::NarrowByCoL() {
-}
+int Engine::FindBestMatchIndex(const vector<vector<double>>& all_weights) {
+  vector<double> to_compare;
+  for (const vector<double>& list : all_weights) {
+    double total_weight = 0;
+    for (const double& weight : list) {
+      total_weight += weight;
+    }
 
-void Engine::NarrowByHealthcare() {
-}
+    to_compare.push_back(total_weight);
+  }
 
-void Engine::NarrowByPollution() {
-}
+  int best_match_index = 0;
+  int highest_weight = 0;
+  for (int i = 0; i < to_compare.size(); i++) {
+    if (to_compare[i] > highest_weight) {
+      best_match_index = i;
+      highest_weight = to_compare[i];
+    }
+  }
 
+  return best_match_index;
+}
 
 } //namespace homefinder

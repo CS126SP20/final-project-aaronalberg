@@ -35,7 +35,7 @@ class MyApp : public cinder::app::App {
   void DrawDirections();
   void DrawEnd();
   void DrawErrorMessage();
-  std::vector<homefinder::City> ParseJSON(); //NOLINT
+  std::vector<homefinder::City> ParseJSONFile();
 
  private:
   int message_index_;

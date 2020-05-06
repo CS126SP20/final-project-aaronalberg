@@ -26,7 +26,7 @@ const vector<string> kMessages = {
     "What is your ideal temperature on a summer day?",
     "What is your ideal metropolitan area population?",
     "How important is low crime?",
-    "How important is low cost of living?",
+    "How okay are you with a high cost of living?",
     "How important is quality healthcare?",
     "How important is good air quality?",
     "The end."};
@@ -36,6 +36,7 @@ const vector<string> kDirections = {
     "Enter a percentage between 1 and 99"};
 const string kEndingMessage = "Based on your preferences, you should live in: ";
 const Color kThemeColor(1,0,0);
+
 
 #if defined(CINDER_COCOA_TOUCH)
 const char kNormalFont[] = "Arial";
@@ -65,40 +66,7 @@ MyApp::MyApp()
 
 
 void MyApp::setup() {
-  cout << "start" << endl;
-  cities_ = ParseJSON();
-  cout << "after json" << endl;
-
-  /*
-  // IMPORTANT: 1st parameter must be a hostname or an IP adress string.
-  httplib::Client cli("localhost", 1234);
-  cli.set_timeout_sec(30);
-  auto res = cli.Get("http://jsonplaceholder.typicode.com/todos/1");
-  if (res && res->status == 200) {
-    std::cout << res->body << std::endl;
-  }
-   */
-
-  try {
-    // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
-    cout << "1" << endl;
-    http::Request request("http://www.numbeo.com:8008/api/indices?api_key=hbtoxypuja22wp&query=Tokyo");
-    cout << "2" << endl;
-
-    // send a get request
-    const http::Response response = request.send("GET");
-    cout << "headers " << endl;
-    for (auto& e : response.headers) {
-      cout << e << endl;
-    }
-    cout << "Please for the love of god print" << endl;
-    std::cout << std::string(response.body.begin(), response.body.end()) << '\n'; // print the result
-    cout << "3" << endl;
-  }
-  catch (const std::exception& e) {
-    std::cerr << "Request failed, error: " << e.what() << '\n';
-  }
-
+  cities_ = ParseJSONFile();
 }
 
 void MyApp::update() {
@@ -261,35 +229,23 @@ void MyApp::mouseDown(cinder::app::MouseEvent event) {
     }
   }
 }
-std::vector<homefinder::City> MyApp::ParseJSON() {
+std::vector<homefinder::City> MyApp::ParseJSONFile() {
 
   std::ifstream json_file;
   json_file.open(cinder::app::getAssetPath("population.json").c_str());
   json population_data = json::parse(json_file);
 
   vector<homefinder::City> cities;
-  for (auto& i : population_data) {
-    if (i["population"] == nullptr) {
+  for (auto& city : population_data) {
+    if (city["population"] == nullptr) {
       break;
     }
 
-    homefinder::City new_city(i["city_ascii"],
-        i["population"],
-        i["lat"], i["lng"]);
+    homefinder::City new_city(city["city_ascii"],
+        city["population"],
+        city["lat"], city["lng"]);
     cities.push_back(new_city);
   }
-
-  std::ifstream json_file2;
-  json_file2.open(cinder::app::getAssetPath("past-weather.json").c_str());
-  json data = json::parse(json_file2);
-  cout << "HI" << endl;
-  cout << data["data"]["weather"][0]["maxtempF"] << endl;
-  for (auto& e : data["data"]["weather"]) {
-    for (auto& f : e) {
-      cout << f << endl;
-    }
-  }
-
 
   return cities;
 }
