@@ -32,24 +32,18 @@ TEST_CASE("JSON file parsing", "[json][parse]") {
     REQUIRE(cities[0].name == "Tokyo");
     REQUIRE(cities[0].population == 35676000);
     REQUIRE(cities[0].country == "Japan");
-    REQUIRE(cities[0].lat == 35.685);
-    REQUIRE(cities[0].lng == 139.7514);
   }
 
   SECTION ("Chicago") {
     REQUIRE(cities[24].name == "Chicago");
     REQUIRE(cities[24].population == 8675982);
     REQUIRE(cities[24].country == "United States");
-    REQUIRE(cities[24].lat == 41.8373);
-    REQUIRE(cities[24].lng == -87.6862);
   }
 
   SECTION ("PLACE") {
     REQUIRE(cities[2449].name == "Nakhodka");
     REQUIRE(cities[2449].population == 159551);
     REQUIRE(cities[2449].country == "Russia");
-    REQUIRE(cities[2449].lat == 42.8374);
-    REQUIRE(cities[2449].lng == 132.8874);
   }
 }
 
