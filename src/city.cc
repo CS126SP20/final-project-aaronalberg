@@ -4,11 +4,15 @@
 
 namespace homefinder {
 
-City::City(const std::string& name, const double& population, const double& lat,
-           const double& lng) {
+City::City() = default;
+
+City::City(const std::string& name, const std::string& country,
+           const double& population, const double& lat, const double& lng) {
   this->name = name;
   this->population = population;
   this->lat = lat;
   this->lng = lng;
+  this->country = country;
 }
+
 }  // namespace homefinder

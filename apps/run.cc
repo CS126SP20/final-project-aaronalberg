@@ -23,6 +23,6 @@ void SetUp(App::Settings* settings) {
 
 
 // This is a macro that runs the application.
-CINDER_APP(homefinderapp::MyApp,
+CINDER_APP(homefinderapp::HomeFinderApp,
            RendererGl(RendererGl::Options().msaa(homefinderapp::kSamples)),
            homefinderapp::SetUp)

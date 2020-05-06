@@ -1,17 +1,17 @@
 // Copyright (c) 2020 Aaron Alberg. All rights reserved.
 
+
 #include <homefinder/engine.h>
-#include <httplib.h>
 
-
-using nlohmann::json;
 using std::string;
 using std::stringstream;
+using std::ifstream;
 using std::to_string;
 using std::vector;
+using nlohmann::json;
+
 using std::cout;
 using std::endl;
-using nlohmann::json;
 
 const string kNumbeoUrl =
     "http://www.numbeo.com:8008/api/indices?api_key=hbtoxypuja22wp&query=";
@@ -35,11 +35,16 @@ homefinder::City Engine::FindIdealCity() {
   NarrowByPopulation();
   //NarrowByWeather();
 
+
   GenerateParameterData();
   vector<vector<double>> all_weights = CalculateWeights();
   int best_match_index = FindBestMatchIndex(all_weights);
-
-  return narrowed_list_[0];
+  cout << "size " << narrowed_list_.size() << endl;
+  for (homefinder::City& c : narrowed_list_) {
+    cout << c.name << endl;
+  }
+  cout << "best " + to_string(best_match_index) << endl;
+  return narrowed_list_[best_match_index];
 }
 
 void Engine::GenerateParameterData() {
@@ -66,17 +71,26 @@ void Engine::GenerateParameterData() {
 
     try {
       city.crime_index = json_object["crime_index"];
-      city.col_index = json_object["cpi_and_rent_index"];
-      city.healthcare_index = json_object["health_care_index"];
-      city.pollution_index = json_object["pollution_index"];
-
-      cout << city.crime_index << endl;
-      cout << city.col_index << endl;
-      cout << city.healthcare_index << endl;
-      cout << city.pollution_index << endl;
     } catch (std::exception& e) {
-      cout << city.name << endl;
-      cout << "ERROR" << endl;
+      city.crime_index = 0;
+    }
+
+    try {
+      city.col_index = json_object["cpi_and_rent_index"];
+    } catch (std::exception& e) {
+      city.col_index = 0;
+    }
+
+    try {
+      city.healthcare_index = json_object["health_care_index"];
+    } catch (std::exception& e) {
+      city.healthcare_index = 0;
+    }
+
+    try {
+      city.pollution_index = json_object["pollution_index"];
+    } catch (std::exception& e) {
+      city.pollution_index = 0;
     }
 
 
@@ -179,6 +193,10 @@ int Engine::FindBestMatchIndex(const vector<vector<double>>& all_weights) {
     to_compare.push_back(total_weight);
   }
 
+  for (auto e : to_compare) {
+    cout << e << endl;
+  }
+
   int best_match_index = 0;
   int highest_weight = 0;
   for (int i = 0; i < to_compare.size(); i++) {
@@ -189,6 +207,27 @@ int Engine::FindBestMatchIndex(const vector<vector<double>>& all_weights) {
   }
 
   return best_match_index;
+}
+std::vector<homefinder::City> Engine::ParseJSONFile(const string& path) {
+
+  std::ifstream json_file;
+  json_file.open(
+      cinder::app::getAssetPath(path).c_str());
+  json population_data = json::parse(json_file);
+
+  vector<homefinder::City> cities;
+  for (auto& city : population_data) {
+    if (city["population"] == nullptr) {
+      break;
+    }
+
+    homefinder::City new_city(city["city_ascii"], city["country"],
+                              city["population"],
+                              city["lat"], city["lng"]);
+    cities.push_back(new_city);
+  }
+
+  return cities;
 }
 
 } //namespace homefinder

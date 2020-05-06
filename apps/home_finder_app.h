@@ -10,6 +10,7 @@
 #include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
+
 #include <nlohmann/json.hpp>
 #include <HTTPRequest.hpp>
 #include <homefinder/city.h>
@@ -18,9 +19,9 @@
 
 namespace homefinderapp {
 
-class MyApp : public cinder::app::App {
+class HomeFinderApp : public cinder::app::App {
  public:
-  MyApp();
+  HomeFinderApp();
   void setup() override;
   void update() override;
   void draw() override;
@@ -29,13 +30,11 @@ class MyApp : public cinder::app::App {
 
  private:
   void DrawMessage();
-  void DrawButtons();
   void DrawNextButton();
   void DrawCurrentResponse();
   void DrawDirections();
   void DrawEnd();
   void DrawErrorMessage();
-  std::vector<homefinder::City> ParseJSONFile();
 
  private:
   int message_index_;
@@ -47,7 +46,7 @@ class MyApp : public cinder::app::App {
   bool city_found_;
   cinder::vec2 center;
   std::string current_response_;
-  std::string city_;
+  homefinder::City city_result_;
   std::vector<homefinder::City> cities_;
   std::vector<double> responses_;
 };

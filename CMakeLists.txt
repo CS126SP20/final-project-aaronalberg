@@ -70,24 +70,12 @@ add_subdirectory(tests)
 
 ############## Third-party Libraries #####################
 
-FetchContent_Declare(
-        cpp-httplib
-        GIT_REPOSITORY https://github.com/yhirose/cpp-httplib
-)
 
-FetchContent_GetProperties(cpp-httplib)
-if(NOT cpp-httplib_POPULATED)
-    FetchContent_Populate(cpp-httplib)
-    add_library(cpp-httplib INTERFACE)
-    target_include_directories(cpp-httplib INTERFACE ${cpp-httplib_SOURCE_DIR})
-endif()
-
+#HTTPRequest library
 FetchContent_Declare(
         httprequest
         GIT_REPOSITORY https://github.com/elnormous/httprequest
         GIT_TAG d31af3c754ed64b0f066e0a899862d3d6e7ffbb2
-
-
 )
 
 FetchContent_GetProperties(httprequest)

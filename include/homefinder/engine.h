@@ -6,7 +6,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <sstream>
+#include <cinder/app/AppBase.h>
 #include <nlohmann/json.hpp>
 #include <HTTPRequest.hpp>
 
@@ -19,6 +21,7 @@ class Engine {
   Engine(const std::vector<homefinder::City>& cities,
          const std::vector<double>& responses);
   homefinder::City FindIdealCity();
+  static std::vector<homefinder::City> ParseJSONFile(const std::string& path);
 
  private:
   void NarrowByPopulation();

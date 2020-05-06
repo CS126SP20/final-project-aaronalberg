@@ -10,9 +10,13 @@
 namespace homefinder {
 
 struct City {
-  City(const std::string& name, const double& population,
-       const double& lat, const double& lng);
+  City();
+ public:
+  City(const std::string& name, const std::string& country,
+       const double& population, const double& lat, const double& lng);
+
   std::string name;
+  std::string country;
   double population;
   double temperature;
   double crime_index;

@@ -1,7 +1,6 @@
 // Copyright (c) 2020 Aaron Alberg. All rights reserved.
 
 #include "home_finder_app.h"
-#include <httplib.h>
 
 namespace homefinderapp {
 
@@ -18,9 +17,6 @@ using std::stringstream;
 
 using nlohmann::json;
 
-using std::cout;
-using std::endl;
-
 const vector<string> kMessages = {
     "Welcome! Select your preferences to find your next home",
     "What is your ideal temperature on a summer day?",
@@ -33,7 +29,7 @@ const vector<string> kMessages = {
 const vector<string> kDirections = {
     "Enter a value between 1 and 99",
     "Enter a value between 0 and 35 million",
-    "Enter a percentage between 1 and 99"};
+    "Enter a percentage between 0 and 99"};
 const string kEndingMessage = "Based on your preferences, you should live in: ";
 const Color kThemeColor(1,0,0);
 
@@ -52,24 +48,23 @@ const char kBoldFont[] = "Arial Bold";
 const char kDifferentFont[] = "Papyrus";
 #endif
 
-MyApp::MyApp()
+HomeFinderApp::HomeFinderApp()
   : message_index_{0},
     direction_index_{0},
     ended_{false},
     answering_question_{false},
     city_found_{false},
     center{getWindowCenter()},
-    city_{"Chicago"},
     answered_{true},
     is_start_{message_index_ == 0},
     current_response_{""} {}
 
 
-void MyApp::setup() {
-  cities_ = ParseJSONFile();
+void HomeFinderApp::setup() {
+  cities_ = homefinder::Engine::ParseJSONFile("population.json");
 }
 
-void MyApp::update() {
+void HomeFinderApp::update() {
   center = getWindowCenter();
   if (!is_start_) {
     answering_question_ = true;
@@ -84,13 +79,13 @@ void MyApp::update() {
   }
 }
 
-void MyApp::draw() {
+void HomeFinderApp::draw() {
   cinder::gl::clear(Color(1,1,1));
   cinder::gl::color(Color(1, 0, 0));
   if (ended_) {
     if (!city_found_) {
       homefinder::Engine engine(cities_, responses_);
-      city_ = engine.FindIdealCity();
+      city_result_ = engine.FindIdealCity();
       city_found_ = true;
     }
 
@@ -99,7 +94,7 @@ void MyApp::draw() {
   }
 
   DrawMessage();
-  DrawButtons();
+  DrawNextButton();
   if (!current_response_.empty()) DrawCurrentResponse();
   if (answering_question_) DrawDirections();
   if (!answered_ && !is_start_) DrawErrorMessage();
@@ -120,35 +115,34 @@ void PrintText(const string& text, const C& color, const cinder::ivec2& size,
       .text(text);
 
   const auto box_size = box.getSize();
-  const cinder::vec2 locp = {loc.x - box_size.x / 2, loc.y - box_size.y / 2};
+  const cinder::vec2 locp =
+      {loc.x - box_size.x / 2, loc.y - box_size.y / 2};
   const auto surface = box.render();
   const auto texture = cinder::gl::Texture::create(surface);
   cinder::gl::draw(texture, locp);
 }
 
-void MyApp::DrawEnd() {
+void HomeFinderApp::DrawEnd() {
   PrintText(kEndingMessage, Color(0,0,0),
       {500, 100}, {center.x, center.y - 250});
-  PrintText(city_, kThemeColor, {150, 50}, {center.x, center.y});
+  PrintText(city_result_.name, kThemeColor, {150, 50},
+            {center.x, center.y});
+  PrintText(city_result_.country, kThemeColor, {150, 100},
+            {center.x, center.y + 100});
 }
 
-void MyApp::DrawCurrentResponse() {
+void HomeFinderApp::DrawCurrentResponse() {
   PrintText(current_response_, Color(1,0,0),
       {150,50}, {center.x, center.y});
 }
 
-void MyApp::DrawMessage() {
+void HomeFinderApp::DrawMessage() {
   const cinder::ivec2 size = {500, 120};
   PrintText(kMessages[message_index_],Color(0,0,0),
       size,{center.x, center.y - 250});
 }
 
-void MyApp::DrawButtons() {
-  DrawNextButton();
-  if (is_start_) return; //TODO check this
-}
-
-void MyApp::DrawDirections() {
+void HomeFinderApp::DrawDirections() {
   if (message_index_ == 1) {
     direction_index_ = 0;
   } else if (message_index_ == 2) {
@@ -157,17 +151,18 @@ void MyApp::DrawDirections() {
     direction_index_ = 2;
   }
 
-  PrintText(kDirections[direction_index_], Color(0,0,0),
+  PrintText(
+      kDirections[direction_index_], Color(0,0,0),
       {350, 85},{center.x, center.y - 175});
 }
 
-void MyApp::DrawErrorMessage() {
+void HomeFinderApp::DrawErrorMessage() {
   string error = "You must enter a response";
   PrintText(error, Color(1,0,0),
             {350, 85},{center.x, center.y + 300});
 }
 
-void MyApp::DrawNextButton() {
+void HomeFinderApp::DrawNextButton() {
   const cinder::ivec2 size = {100, 70};
   cinder::gl::color(Color(0,0,0));
   cinder::gl::drawSolidRect(Rectf(center.x - 50,
@@ -177,7 +172,7 @@ void MyApp::DrawNextButton() {
 }
 
 
-void MyApp::keyDown(KeyEvent event) {
+void HomeFinderApp::keyDown(KeyEvent event) {
   if (!answering_question_) return;
   int key = event.getChar();
 
@@ -205,7 +200,7 @@ void MyApp::keyDown(KeyEvent event) {
   }
 }
 
-void MyApp::mouseDown(cinder::app::MouseEvent event) {
+void HomeFinderApp::mouseDown(cinder::app::MouseEvent event) {
   if (!event.isLeftDown()) return;
 
   //Next button clicked
@@ -228,26 +223,6 @@ void MyApp::mouseDown(cinder::app::MouseEvent event) {
       }
     }
   }
-}
-std::vector<homefinder::City> MyApp::ParseJSONFile() {
-
-  std::ifstream json_file;
-  json_file.open(cinder::app::getAssetPath("population.json").c_str());
-  json population_data = json::parse(json_file);
-
-  vector<homefinder::City> cities;
-  for (auto& city : population_data) {
-    if (city["population"] == nullptr) {
-      break;
-    }
-
-    homefinder::City new_city(city["city_ascii"],
-        city["population"],
-        city["lat"], city["lng"]);
-    cities.push_back(new_city);
-  }
-
-  return cities;
 }
 
 }  // namespace homefinderapp
