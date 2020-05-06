@@ -3,6 +3,7 @@
 
 #include <homefinder/engine.h>
 
+
 using std::string;
 using std::stringstream;
 using std::ifstream;
@@ -47,51 +48,25 @@ homefinder::City Engine::FindIdealCity() {
   return narrowed_list_[best_match_index];
 }
 
+string RemoveSpaces(const string& name) {
+  string city_name = name;
+  while (name.find(' ') != string::npos) {
+    int space_index = city_name.find(' ');
+    city_name.replace(space_index, 1, "%20");
+  }
+}
+
 void Engine::GenerateParameterData() {
   for (homefinder::City& city : narrowed_list_) {
-    string city_name = city.name;
-    int space_index = city_name.find(' ');
-    if (space_index != string::npos) {
-      city_name.replace(space_index, 1, "%20");
-    }
-    json json_object;
-    stringstream stream;
 
-    try {
-      http::Request request(kNumbeoUrl + city_name);
-      http::Response response = request.send("GET");
+    string city_name = RemoveSpaces(city.name);
 
-      stream << std::string(response.body.begin(), response.body.end()) << '\n';
-      stream >> json_object;
 
-    } catch (const std::exception& e) {
-      std::cerr << "Request failed, error: " << e.what() << '\n';
-      std::cerr << "City " << city.name << endl;
-    }
 
-    try {
-      city.crime_index = json_object["crime_index"];
-    } catch (std::exception& e) {
-      city.crime_index = 0;
-    }
+    homefinder::HTTP request;
+    request.MakeRequest(kNumbeoUrl + city_name, city);
 
-    try {
-      city.col_index = json_object["cpi_and_rent_index"];
-    } catch (std::exception& e) {
-      city.col_index = 0;
-    }
 
-    try {
-      city.healthcare_index = json_object["health_care_index"];
-    } catch (std::exception& e) {
-      city.healthcare_index = 0;
-    }
-
-    try {
-      city.pollution_index = json_object["pollution_index"];
-    } catch (std::exception& e) {
-      city.pollution_index = 0;
-    }
 
 
   }

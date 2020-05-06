@@ -3,16 +3,18 @@
 #ifndef FINALPROJECT_ENGINE_H
 #define FINALPROJECT_ENGINE_H
 
+
+#include <cinder/app/AppBase.h>
+#include "city.h"
+#include "HTTP.h"
+
+#include <HTTPRequest.hpp>
+#include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cinder/app/AppBase.h>
-#include <nlohmann/json.hpp>
-#include <HTTPRequest.hpp>
-
-#include "city.h"
 
 namespace homefinder {
 
