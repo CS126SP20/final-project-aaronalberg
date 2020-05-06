@@ -50,25 +50,20 @@ homefinder::City Engine::FindIdealCity() {
 
 string RemoveSpaces(const string& name) {
   string city_name = name;
-  while (name.find(' ') != string::npos) {
+  while (city_name.find(' ') != string::npos) {
     int space_index = city_name.find(' ');
     city_name.replace(space_index, 1, "%20");
   }
+
+  return city_name;
 }
 
 void Engine::GenerateParameterData() {
   for (homefinder::City& city : narrowed_list_) {
 
     string city_name = RemoveSpaces(city.name);
-
-
-
     homefinder::HTTP request;
-    request.MakeRequest(kNumbeoUrl + city_name, city);
-
-
-
-
+    request.MakeRequest(kNumbeoUrl + city_name, city, false);
   }
 }
 
