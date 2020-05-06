@@ -11,9 +11,11 @@ I will use a simple weighting system to find a good match.
 
 I will use the nlohmann json library to parse JSON data both from a file and
 from API calls. The API calls will be made using the HTTPRequest library. I will
-use the World Weather Online API for weather data, and the Numbeo API for all
-other calls. To limit the list of cities I am checking against, I will use a 
-pre-downloaded static dataset containing roughly 15,000 cities and their data.
+use the versatile Numbeo API to access all of this data because they provide 
+pollution, crime, healthcare, climate, and cost of living data for almost every
+city. To limit the list of cities I am checking against, I will use a
+pre-downloaded static dataset containing roughly 5,000 valid cities and 
+their data.
 
 The first week will be spent familiarizing myself with Cinder and setting up my
 external libraries with CMake. The second week will be spent developing the

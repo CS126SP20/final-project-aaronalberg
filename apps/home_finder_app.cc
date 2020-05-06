@@ -19,15 +19,14 @@ using nlohmann::json;
 
 const vector<string> kMessages = {
     "Welcome! Select your preferences to find your next home",
-    "What is your ideal temperature on a summer day?",
     "What is your ideal metropolitan area population?",
-    "How important is low crime?",
+    "How important is moderate/likeable weather?",
+    "How okay are you with crime?",
     "How okay are you with a high cost of living?",
     "How important is quality healthcare?",
     "How important is good air quality?",
     "The end."};
 const vector<string> kDirections = {
-    "Enter a value between 1 and 99",
     "Enter a value between 0 and 35 million",
     "Enter a percentage between 0 and 99"};
 const string kEndingMessage = "Based on your preferences, you should live in: ";
@@ -125,7 +124,7 @@ void PrintText(const string& text, const C& color, const cinder::ivec2& size,
 void HomeFinderApp::DrawEnd() {
   PrintText(kEndingMessage, Color(0,0,0),
       {500, 100}, {center.x, center.y - 250});
-  PrintText(city_result_.name, kThemeColor, {150, 50},
+  PrintText(city_result_.name, kThemeColor, {250, 50},
             {center.x, center.y});
   PrintText(city_result_.country, kThemeColor, {150, 100},
             {center.x, center.y + 100});
@@ -145,10 +144,8 @@ void HomeFinderApp::DrawMessage() {
 void HomeFinderApp::DrawDirections() {
   if (message_index_ == 1) {
     direction_index_ = 0;
-  } else if (message_index_ == 2) {
-    direction_index_ = 1;
   } else {
-    direction_index_ = 2;
+    direction_index_ = 1;
   }
 
   PrintText(
@@ -180,7 +177,7 @@ void HomeFinderApp::keyDown(KeyEvent event) {
   if (key >= 48 && key <= 57) {
 
     int cap = 0;
-    if (direction_index_ == 1) {
+    if (direction_index_ == 0) {
       cap = 8; //number of digits in 35 million
     } else {
       cap = 2; //number of digits in temperature or percentage

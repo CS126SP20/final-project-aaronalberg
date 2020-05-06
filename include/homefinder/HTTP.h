@@ -13,7 +13,7 @@ namespace homefinder {
 class HTTP {
  public:
   HTTP();
-  void MakeRequest(const std::string& url, homefinder::City&, bool is_weather);
+  void MakeRequest(const std::string& url, homefinder::City&);
 };
 
 

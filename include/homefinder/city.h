@@ -13,18 +13,17 @@ struct City {
   City();
  public:
   City(const std::string& name, const std::string& country,
-       const double& population, const double& lat, const double& lng);
+       const double& population);
 
   std::string name;
   std::string country;
   double population;
-  double temperature;
+
+  double climate_index;
   double crime_index;
   double healthcare_index;
   double pollution_index;
   double col_index; //Cost of Living
-  double lat;
-  double lng;
 
 };
 

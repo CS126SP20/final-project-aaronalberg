@@ -27,7 +27,6 @@ class Engine {
 
  private:
   void NarrowByPopulation();
-  void NarrowByWeather();
   void GenerateParameterData();
   std::vector<std::vector<double>> CalculateWeights();
   int FindBestMatchIndex(const std::vector<std::vector<double>>& all_weights);

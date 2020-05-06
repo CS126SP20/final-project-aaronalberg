@@ -13,7 +13,7 @@ namespace homefinder {
 
 HTTP::HTTP() = default;
 
-void HTTP::MakeRequest(const string &url, City& city, bool is_weather) {
+void HTTP::MakeRequest(const string &url, homefinder::City& city) {
   json json_object;
   stringstream stream;
 
@@ -29,31 +29,42 @@ void HTTP::MakeRequest(const string &url, City& city, bool is_weather) {
     std::cerr << "City " << city.name << endl;
   }
 
-  if (!is_weather) {
-    try {
-      city.crime_index = json_object["crime_index"];
-    } catch (std::exception& e) {
-      city.crime_index = 0;
-    }
-
-    try {
-      city.col_index = json_object["cpi_and_rent_index"];
-    } catch (std::exception& e) {
-      city.col_index = 0;
-    }
-
-    try {
-      city.healthcare_index = json_object["health_care_index"];
-    } catch (std::exception& e) {
-      city.healthcare_index = 0;
-    }
-
-    try {
-      city.pollution_index = json_object["pollution_index"];
-    } catch (std::exception& e) {
-      city.pollution_index = 0;
-    }
+  try {
+    city.crime_index = json_object["crime_index"];
+  } catch (std::exception& e) {
+    city.crime_index = 0;
   }
+
+  try {
+    city.col_index = json_object["cpi_and_rent_index"];
+
+    //For some reason API data is skewed incorrectly towards high CoL areas
+    if (city.col_index > 80) {
+      city.col_index = 80;
+    }
+
+  } catch (std::exception& e) {
+    city.col_index = 0;
+  }
+
+  try {
+    city.healthcare_index = json_object["health_care_index"];
+  } catch (std::exception& e) {
+    city.healthcare_index = 0;
+  }
+
+  try {
+    city.pollution_index = json_object["pollution_index"];
+  } catch (std::exception& e) {
+    city.pollution_index = 0;
+  }
+
+  try {
+    city.climate_index = json_object["climate_index"];
+  } catch (std::exception& e) {
+    city.climate_index = 0;
+  }
+
 }
 
 } //namespace homefinder

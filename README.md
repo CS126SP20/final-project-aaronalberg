@@ -4,6 +4,7 @@
 [![docs](https://img.shields.io/badge/docs-yes-brightgreen)](docs/README.md)
 
 **Aaron Alberg** - [`aalberg2@illinois.edu`](mailto:aalberg2@illinois.edu)
+![Image of Chicago](chicago.jpg)
 ---
 
 ## Purpose
