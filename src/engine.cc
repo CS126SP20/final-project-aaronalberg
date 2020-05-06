@@ -20,12 +20,13 @@ Engine::Engine(const std::vector<homefinder::City>& cities,
                const std::vector<double>& responses) {
   all_cities_ = cities;
   responses_ = responses;
-  narrowed_list_.clear();
+
 }
  */
 
 homefinder::City Engine::FindIdealCity(const vector<double>& responses,
                                        const vector<homefinder::City>& cities) {
+  narrowed_list_.clear();
 
   // Question indices (in responses vector):
   // Population(0), Weather(1),  Crime(2), CoL(3), Healthcare(4), Pollution(5)

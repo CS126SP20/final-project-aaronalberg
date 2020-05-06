@@ -51,31 +51,18 @@ TEST_CASE("JSON file parsing", "[json-parse]") {
   }
 }
 
-TEST_CASE("Narrow by population", "[engine][narrow]") {
-
-}
-
+// Helper functions indirectly tested through this function, as per Piazza
 TEST_CASE("Find ideal city", "[engine]") {
-
-}
-
-TEST_CASE("Generate parameters", "[engine]") {
-
-}
-
-TEST_CASE("Find best match index", "[engine][helper]") {
-
-}
-
-TEST_CASE("Calculate weights", "[engine]") {
-
+  std::vector<homefinder::City> cities =
+      homefinder::Engine::ParseJSONFile("population.json");
+  std::vector<double> responses = {35000000, 12, 35, 54, 34, 67};
 }
 
 TEST_CASE("HTTP Request", "[http-request]") {
 
 }
 
-TEST_CASE("Remove spaces", "[engine][helper]") {
+TEST_CASE("Remove spaces", "[engine]") {
   SECTION("No spaces to remove") {
     REQUIRE(homefinder::Engine::RemoveSpaces("Chicago") == "Chicago");
     REQUIRE(homefinder::Engine::RemoveSpaces("Lexington") == "Lexington");

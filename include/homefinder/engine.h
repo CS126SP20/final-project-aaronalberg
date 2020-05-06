@@ -21,8 +21,6 @@ namespace homefinder {
 
 class Engine {
  public:
-  Engine(const std::vector<homefinder::City>& cities,
-         const std::vector<double>& responses);
   Engine();
   homefinder::City FindIdealCity(const std::vector<double>& responses,
                                  const std::vector<homefinder::City>& cities);
@@ -38,9 +36,7 @@ class Engine {
   int FindBestMatchIndex(const std::vector<std::vector<double>>& all_weights);
 
  private:
-  std::vector<homefinder::City> all_cities_;
   std::vector<homefinder::City> narrowed_list_;
-  std::vector<double> responses_;
 };
 
 }  // namespace homefinder
