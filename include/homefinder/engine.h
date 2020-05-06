@@ -25,6 +25,9 @@ class Engine {
   homefinder::City FindIdealCity();
   static std::vector<homefinder::City> ParseJSONFile(const std::string& path);
 
+  //public only for testing purposes only
+  static std::string RemoveSpaces(const std::string& to_change);
+
  private:
   void NarrowByPopulation();
   void GenerateParameterData();

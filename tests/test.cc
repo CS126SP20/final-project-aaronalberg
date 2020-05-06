@@ -15,12 +15,10 @@ TEST_CASE("Random sanity test", "[random]") {
 
 TEST_CASE("City constructor", "[constructor][city]") {
   homefinder::City
-      city("Chicago", "USA", 3000000, 50, 50);
+      city("Chicago", "USA", 3000000);
   REQUIRE(city.name == "Chicago");
   REQUIRE(city.country == "USA");
   REQUIRE(city.population == 3000000);
-  REQUIRE(city.lat == 50);
-  REQUIRE(city.lng == 50);
 }
 
 TEST_CASE("JSON file parsing", "[json][parse]") {
@@ -40,7 +38,7 @@ TEST_CASE("JSON file parsing", "[json][parse]") {
     REQUIRE(cities[24].country == "United States");
   }
 
-  SECTION ("PLACE") {
+  SECTION ("Nakhodka") {
     REQUIRE(cities[2449].name == "Nakhodka");
     REQUIRE(cities[2449].population == 159551);
     REQUIRE(cities[2449].country == "Russia");
@@ -51,4 +49,32 @@ TEST_CASE("Narrow by population", "[engine][narrow]") {
 
 }
 
-TEST_CASE("Generate Parameters", "[engine][")
+TEST_CASE("Generate Parameters", "[engine][") {
+
+}
+
+TEST_CASE("HTTP Request", "[http-request]") {
+
+}
+
+TEST_CASE("Remove spaces", "[engine][helper]") {
+  SECTION("No spaces to remove") {
+    REQUIRE(homefinder::Engine::RemoveSpaces("Chicago") == "Chicago");
+    REQUIRE(homefinder::Engine::RemoveSpaces("Lexington") == "Lexington");
+  }
+
+  SECTION("One space to remove") {
+    REQUIRE(homefinder::Engine::RemoveSpaces("Sao Paulo") == "Sao%20Paulo");
+    REQUIRE(homefinder::Engine::RemoveSpaces("New York") == "New%20York");
+  }
+
+  SECTION("Two spaces to remove") {
+    REQUIRE(homefinder::Engine::RemoveSpaces("La Vera Cruz")
+            == "La%20Vera%20Cruz");
+  }
+
+  SECTION("Bad inputs") {
+    REQUIRE(homefinder::Engine::RemoveSpaces(" ") == "%20");
+    REQUIRE(homefinder::Engine::RemoveSpaces("") == "");
+  }
+}

@@ -36,8 +36,8 @@ homefinder::City Engine::FindIdealCity() {
 }
 
 // For use in http query
-string RemoveSpaces(const string& name) {
-  string city_name = name;
+string Engine::RemoveSpaces(const string& to_change) {
+  string city_name = to_change;
   while (city_name.find(' ') != string::npos) {
     int space_index = city_name.find(' ');
     city_name.replace(space_index, 1, "%20");
