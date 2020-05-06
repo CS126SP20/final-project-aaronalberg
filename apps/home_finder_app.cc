@@ -15,8 +15,6 @@ using std::string;
 using std::vector;
 using std::stringstream;
 
-using nlohmann::json;
-
 const vector<string> kMessages = {
     "Welcome! Select your preferences to find your next home",
     "What is your ideal metropolitan area population?",
@@ -83,8 +81,8 @@ void HomeFinderApp::draw() {
   cinder::gl::color(Color(1, 0, 0));
   if (ended_) {
     if (!city_found_) {
-      homefinder::Engine engine(cities_, responses_);
-      city_result_ = engine.FindIdealCity();
+      homefinder::Engine engine;
+      city_result_ = engine.FindIdealCity(responses_, cities_);
       city_found_ = true;
     }
 

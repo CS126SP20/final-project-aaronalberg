@@ -5,9 +5,6 @@
 
 
 using std::string;
-using std::stringstream;
-using std::ifstream;
-using std::to_string;
 using std::vector;
 using nlohmann::json;
 
@@ -16,21 +13,26 @@ const string kNumbeoUrl =
 
 namespace homefinder {
 
+Engine::Engine() = default;
+
+/*
 Engine::Engine(const std::vector<homefinder::City>& cities,
                const std::vector<double>& responses) {
   all_cities_ = cities;
   responses_ = responses;
   narrowed_list_.clear();
 }
+ */
 
-homefinder::City Engine::FindIdealCity() {
+homefinder::City Engine::FindIdealCity(const vector<double>& responses,
+                                       const vector<homefinder::City>& cities) {
 
-  // Question indices (in responses_ vector):
+  // Question indices (in responses vector):
   // Population(0), Weather(1),  Crime(2), CoL(3), Healthcare(4), Pollution(5)
-  NarrowByPopulation();
+  NarrowByPopulation(responses[0], cities);
   GenerateParameterData();
 
-  vector<vector<double>> all_weights = CalculateWeights();
+  vector<vector<double>> all_weights = CalculateWeights(responses);
   int best_match_index = FindBestMatchIndex(all_weights);
   return narrowed_list_[best_match_index];
 }
@@ -51,20 +53,21 @@ void Engine::GenerateParameterData() {
 
     string city_name = RemoveSpaces(city.name);
     homefinder::HTTP request;
-    request.MakeRequest(kNumbeoUrl + city_name, city);
+    request.AddAPIData(kNumbeoUrl + city_name, city);
   }
 }
 
-void Engine::NarrowByPopulation() {
+void Engine::NarrowByPopulation(const double& population,
+                                const vector<homefinder::City>& cities) {
   vector<homefinder::City> narrowed_list;
   double error = .1;
 
   while (narrowed_list.size() < 10) {
     narrowed_list.clear();
 
-    for (const homefinder::City& city : all_cities_) {
-      if (responses_[0] / city.population <= (1 + error) &&
-          responses_[0] / city.population >= (1 - error)) {
+    for (const homefinder::City& city : cities) {
+      if (population / city.population <= (1 + error) &&
+          population / city.population >= (1 - error)) {
         narrowed_list.push_back(city);
       }
     }
@@ -80,31 +83,31 @@ void Engine::NarrowByPopulation() {
   narrowed_list_ = narrowed_list;
 }
 
-vector<vector<double>> Engine::CalculateWeights() {
+vector<vector<double>> Engine::CalculateWeights(const vector<double>& responses) {
   vector<vector<double>> all_cities_weights;
   for (homefinder::City& city : narrowed_list_) {
     vector<double> city_weights;
 
-    // Question indices (in responses_):
+    // Question indices (in responses):
     // Population(0), Weather(1), Crime(2), CoL(3), Healthcare(4), Pollution(5)
-    for (int i = 1; i < responses_.size(); i++) {
+    for (int i = 1; i < responses.size(); i++) {
       double parameter_weight;
 
       switch (i) {
         case 1:
-          parameter_weight = responses_[i] * city.climate_index;
+          parameter_weight = responses[i] * city.climate_index;
           break;
         case 2:
-          parameter_weight = responses_[i] * city.crime_index;
+          parameter_weight = responses[i] * city.crime_index;
           break;
         case 3:
-          parameter_weight = responses_[i] * city.col_index;
+          parameter_weight = responses[i] * city.col_index;
           break;
         case 4:
-          parameter_weight = responses_[i] * city.healthcare_index;
+          parameter_weight = responses[i] * city.healthcare_index;
           break;
         case 5:
-          parameter_weight = responses_[i] * city.pollution_index;
+          parameter_weight = responses[i] * city.pollution_index;
           break;
       }
 
@@ -141,12 +144,18 @@ int Engine::FindBestMatchIndex(const vector<vector<double>>& all_weights) {
 }
 std::vector<homefinder::City> Engine::ParseJSONFile(const string& path) {
 
-  std::ifstream json_file;
-  json_file.open(
-      cinder::app::getAssetPath(path).c_str());
-  json population_data = json::parse(json_file);
-
   vector<homefinder::City> cities;
+  std::ifstream json_file;
+  json population_data;
+  try {
+    json_file.open(
+        cinder::app::getAssetPath(path).c_str());
+    population_data = json::parse(json_file);
+  } catch (std::exception& exception) {
+    return cities;
+  }
+
+
   for (auto& city : population_data) {
     if (city["population"] == nullptr) {
       break;

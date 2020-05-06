@@ -11,7 +11,6 @@
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 
-#include <nlohmann/json.hpp>
 #include <HTTPRequest.hpp>
 #include <homefinder/city.h>
 #include <homefinder/city.h>

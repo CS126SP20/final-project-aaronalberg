@@ -3,17 +3,20 @@
 #ifndef FINALPROJECT_HTTP_H
 #define FINALPROJECT_HTTP_H
 
-#include <string>
 #include <nlohmann/json.hpp>
-#include <homefinder/city.h>
-#include <homefinder/engine.h>
+#include <string>
+#include <sstream>
+#include <iostream>
+
+#include "city.h"
+#include "engine.h"
 
 namespace homefinder {
 
 class HTTP {
  public:
   HTTP();
-  void MakeRequest(const std::string& url, homefinder::City&);
+  void AddAPIData(const std::string& url, homefinder::City&);
 };
 
 

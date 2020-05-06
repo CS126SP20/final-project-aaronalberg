@@ -21,7 +21,7 @@ TEST_CASE("City constructor", "[constructor][city]") {
   REQUIRE(city.population == 3000000);
 }
 
-TEST_CASE("JSON file parsing", "[json][parse]") {
+TEST_CASE("JSON file parsing", "[json-parse]") {
   std::vector<homefinder::City> cities =
       homefinder::Engine::ParseJSONFile("population.json");
   REQUIRE(cities.size() == 5336); //number with all fields not null
@@ -32,16 +32,22 @@ TEST_CASE("JSON file parsing", "[json][parse]") {
     REQUIRE(cities[0].country == "Japan");
   }
 
-  SECTION ("Chicago") {
+  SECTION("Chicago") {
     REQUIRE(cities[24].name == "Chicago");
     REQUIRE(cities[24].population == 8675982);
     REQUIRE(cities[24].country == "United States");
   }
 
-  SECTION ("Nakhodka") {
+  SECTION("Nakhodka") {
     REQUIRE(cities[2449].name == "Nakhodka");
     REQUIRE(cities[2449].population == 159551);
     REQUIRE(cities[2449].country == "Russia");
+  }
+
+  SECTION("Bad file path") {
+    std::vector<homefinder::City> list =
+        homefinder::Engine::ParseJSONFile("anypath.flarp");
+    REQUIRE(list.empty());
   }
 }
 
@@ -49,7 +55,19 @@ TEST_CASE("Narrow by population", "[engine][narrow]") {
 
 }
 
-TEST_CASE("Generate Parameters", "[engine][") {
+TEST_CASE("Find ideal city", "[engine]") {
+
+}
+
+TEST_CASE("Generate parameters", "[engine]") {
+
+}
+
+TEST_CASE("Find best match index", "[engine][helper]") {
+
+}
+
+TEST_CASE("Calculate weights", "[engine]") {
 
 }
 

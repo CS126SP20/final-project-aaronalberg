@@ -13,7 +13,7 @@ namespace homefinder {
 
 HTTP::HTTP() = default;
 
-void HTTP::MakeRequest(const string &url, homefinder::City& city) {
+void HTTP::AddAPIData(const string &url, homefinder::City& city) {
   json json_object;
   stringstream stream;
 
