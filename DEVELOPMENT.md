@@ -1,9 +1,18 @@
 # Development
 
+##5/5/2020
+- HTTPRequest library reverted to functional version
+- Numbeo API data integrated successfully into engine
+- Engine returns cities with only some errors
+    - Works better for larger population cities
+    - Not all parameter data exists for smaller towns
+- All parameters except weather accounted for in engine
+- Challenge: weather API maxes out at 500 calls/day
 ##5/4/2020
 - Climate API changed to World Weather Online
 - Added population question, modified question directions
 - Passed info from user to engine
+- HTTP Requests stopped working
 
 Working on:
 - Making engine funcitonal
