@@ -1,7 +1,7 @@
 // Copyright (c) 2020 Aaron Alberg. All rights reserved.
 
-#ifndef FINALPROJECT_HTTP_H
-#define FINALPROJECT_HTTP_H
+#ifndef FINALPROJECT_API_H
+#define FINALPROJECT_API_H
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -13,14 +13,14 @@
 
 namespace homefinder {
 
-class HTTP {
+class API {
  public:
-  HTTP();
-  void AddAPIData(const std::string& url, homefinder::City&);
+  API();
+  static void AddAPIData(const std::string& url, homefinder::City&);
 };
 
 
 
 } //namespace homefinder
 
-#endif  // FINALPROJECT_HTTP_H
+#endif  // FINALPROJECT_API_H

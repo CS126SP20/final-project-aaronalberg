@@ -3,19 +3,18 @@
 #ifndef FINALPROJECT_ENGINE_H
 #define FINALPROJECT_ENGINE_H
 
-
 #include <cinder/app/AppBase.h>
+
 #include <HTTPRequest.hpp>
-#include <nlohmann/json.hpp>
-#include "city.h"
-#include "HTTP.h"
-
-
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "API.h"
+#include "city.h"
 
 namespace homefinder {
 
@@ -30,7 +29,7 @@ class Engine {
   static std::string RemoveSpaces(const std::string& to_change);
 
  private:
-  void NarrowByPopulation(const double& population, const std::vector<homefinder::City>& cities);
+  void NarrowByPopulation(double population, const std::vector<homefinder::City>& cities);
   void GenerateParameterData();
   std::vector<std::vector<double>> CalculateWeights(const std::vector<double>& responses);
   int FindBestMatchIndex(const std::vector<std::vector<double>>& all_weights);

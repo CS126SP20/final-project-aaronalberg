@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Aaron Alberg. All rights reserved.
 
-#include "homefinder/HTTP.h"
+#include "homefinder/API.h"
 
 using std::stringstream;
 using std::string;
@@ -11,9 +11,9 @@ using std::endl;
 
 namespace homefinder {
 
-HTTP::HTTP() = default;
+API::API() = default;
 
-void HTTP::AddAPIData(const string &url, homefinder::City& city) {
+void API::AddAPIData(const string &url, homefinder::City& city) {
   json json_object;
   stringstream stream;
 

@@ -15,18 +15,12 @@ namespace homefinder {
 
 Engine::Engine() = default;
 
-/*
-Engine::Engine(const std::vector<homefinder::City>& cities,
-               const std::vector<double>& responses) {
-  all_cities_ = cities;
-  responses_ = responses;
-
-}
- */
-
 homefinder::City Engine::FindIdealCity(const vector<double>& responses,
                                        const vector<homefinder::City>& cities) {
   narrowed_list_.clear();
+  if (responses.size() == 0 || cities.size() == 0) {
+    return City("Chicago", "USA", 3000000);
+  }
 
   // Question indices (in responses vector):
   // Population(0), Weather(1),  Crime(2), CoL(3), Healthcare(4), Pollution(5)
@@ -53,15 +47,18 @@ void Engine::GenerateParameterData() {
   for (homefinder::City& city : narrowed_list_) {
 
     string city_name = RemoveSpaces(city.name);
-    homefinder::HTTP request;
-    request.AddAPIData(kNumbeoUrl + city_name, city);
+    homefinder::API::AddAPIData(kNumbeoUrl + city_name, city);
   }
 }
 
-void Engine::NarrowByPopulation(const double& population,
+void Engine::NarrowByPopulation(double population,
                                 const vector<homefinder::City>& cities) {
   vector<homefinder::City> narrowed_list;
   double error = .1;
+
+  if (population < 100) {
+    population = 100; //avoid divide by zero error later
+  }
 
   while (narrowed_list.size() < 10) {
     narrowed_list.clear();
