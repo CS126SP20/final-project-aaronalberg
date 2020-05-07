@@ -6,7 +6,6 @@
 **Aaron Alberg** - [`aalberg2@illinois.edu`](mailto:aalberg2@illinois.edu)
 
 <img src="chicago.jpg" alt="Chicago" width="75%">
----
 
 ## Purpose
 HomeFinder was built to provide users a tool for finding their next home based 
@@ -26,11 +25,11 @@ Clone the project from Github:
 HomeFinder is a CMake applicaiton built on the Cinder framework. 
 
 If you are interested in modifying the project or looking into the source code,
-here are some directions
+here are some directions:
 
-Setting up Cinder + Home Finder in CLion
+Setting up Cinder + Home Finder in CLion *(2020.1.1)*
 1. Download Cinder (v0.9.2) for your platform. Extract the downloaded item into 
-a folder. We’ll call this folder ~/Cinder throughout the instructions
+a folder. We’ll call this folder ~/Cinder throughout the instructions.
 2. Open the ~/Cinder folder in CLion and click the green build button. This will
 build libcinder. You only need to do this once per machine. 
 This build might take a while.
